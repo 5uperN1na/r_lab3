@@ -1,0 +1,327 @@
+---
+title: "IDS - Module 3"
+author: "Paula Suarez"
+date: "October 25, 2019"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+**Assignment 3**  
+
+*Description of the Dataset:*  
+The data used in this assignment is a built-in data frame called `Housing` from the package `Ecdat`. It includes information about the price of houses in Windsor, Canada, in 1987 and associated variables such as lot size, the number of bedrooms and bathrooms, and the presence of features such as driveways and air conditioning.  
+
+**Question 1: Preparing Your Workspace**  
+
+*Context:*  
+This assignment will use functions found in the `ggplot2`, `dplyr`, and `Ecdat` packages, which can be loaded using the `library()` function. The `Ecdat` package includes a built-in data frame object called `Housing` that contains data about housing prices in Windsor, Canada. You will need to access this data using the `data()` function or using `Ecdat::Housing` to complete this assignment. Review the webinar for details about how to use each method to ensure that you have access to a data frame object called `Housing`.    
+
+*Instructions:*  
+- Load the required packages.  
+- Access the `Housing` data set.  
+
+*Assignment Code:*  
+```{r}
+# Load packages
+library(Ecdat) # Accessing the data
+library(ggplot2) # Data visualization
+library(dplyr) # Data manipulation
+
+
+# Access the data
+data(Housing)
+
+```
+
+*Feedback:*  
+Remember that you should always load the required packages at the very beginning of your script to ensure that all users know which packages need to be installed prior to running the script.  
+
+**Question 2: Exploring the Data**  
+
+*Context:*  
+An important first step is familiarizing yourself with the data. There are several functions that can be used to quickly learn more about the data that is being used.  
+
+*Instructions:*  
+- Use the `class()` function to ensure that `Housing` is a data frame object.  
+- Use the `head()` function to see the top six rows of the data frame.  
+- Use the `nrow()` function to find the number of rows in the data frame. Store this value in a scalar object called `row_count`.   
+- Use the `names()` function to print the names of the variables in the data frame.  
+- Use the `str()` function to look at the structure of the data frame, including the class of each variable.  
+
+*Assignment Code:*  
+```{r}
+# What class is the object?
+class(Housing)
+
+# Print the first six rows
+head(Housing)
+
+
+# How many rows does the data frame have?
+row_count <- nrow(Housing)
+
+
+# What are the variable names?
+names(Housing)
+
+# Print the structure of the data
+str(Housing)
+class(Housing$price)
+class(Housing$lotsize)
+class(Housing$bedrooms)
+class (Housing$bathrms)
+class (Housing$stories)
+class (Housing$driveway)
+class (Housing$recroom)
+class (Housing$fullbase)
+class (Housing$gashw)
+class (Housing$airco)
+class (Housing$garagepl)
+class (Housing$prefarea)
+
+```
+
+*Feedback:*  
+Using these functions can provide insight into what the data frame looks like and what class of data are found in each column.  
+
+**Question 3: Simple Visualizations with Base R**  
+
+*Context:*  
+The next step is to visualize the data. Sometimes, the simple, built-in plotting functions that come with R are sufficient for quickly producing low quality plots that you can use to learn more about the data. 
+The `plot()` function is fairly versitile. Generally speaking, it requires two arguments, `x` and `y`, each a vector with the same number of elements.  
+
+- To produce a scatterplot using `plot()`, `x` and `y` should be numeric.  
+- To produce a boxplot using `plot()`, `x` should be categorical (factor), and `y` should be numeric.  
+- To produce a mosaic plot using `plot()`, both `x` and `y` should be categorical (factor).  
+
+*Hint:* How do you extract a vector (column) from a data frame using only the functions found in the base R packages?
+
+*Instructions:*  
+- Use `plot()` to create a scatterplot with `price` on the x axis and `lotsize` on the y axis.  
+- Use `plot()` to create a boxplot with `airco` on the x axis and `lotsize` on the y axis.  
+- Use `plot()` to create a mosaic plot with `driveway` on the x axis and `recroom` on the y axis.  
+- Just above the plot window in RStudio, click on "Export" and select "Save as Image...". Save the plot as `Rplot.png` in the default directory.  
+
+*Assignment Code:*  
+```{r}
+# Create a scatterplot
+#Use `plot()` to create a scatterplot with `price` on the x axis and `lotsize` on the y axis.  
+
+plot (as.numeric (Housing$price), as.numeric (Housing$lotsize))
+
+# Create a boxplot
+#Use `plot()` to create a boxplot with `airco` on the x axis and `lotsize` on the y axis.
+
+boxplot(Housing$airco, as.numeric(Housing$lotsize))
+ 
+
+# Create a mosaic plot
+#Use `plot()` to create a mosaic plot with `driveway` on the x axis and `recroom` on the y axis
+
+
+mosaicplot (Housing$driveway, Housing$recroom)
+
+# Don't forget to export your plot!
+```
+
+*Feedback:*  
+Although the plots it produces are lower quality, the `plot()` function has some interesting applications when it comes time to run model diagnostics. Until then, we will use `{ggplot2}` as the standard for producing visualizations.
+
+**Question 4: Visualizing Data with `{ggplot2}`**  
+
+*Context:*  
+Now it's time to create more complex visualizations. You are interested in visualizing how the number of stories (`stories`), and the presence of air conditioning (`airco`) and a full basement (`fullbase`) influences the `price` of a house.  
+
+*Instructions:*  
+- Using `ggplot()`, create a boxplot with `stories` on the x axis and `price` on the y axis. Remember that because `stories` is numeric, you will need to specify that you want it treated as a factor. Store this figure in an object called `plot1`.  
+- Repeat the plot above, this time also specifying that the `fill` of the boxplots will be based on whether or not the house has a full basement (`fullbase`). Store this figure in an object called `plot2`.  
+- Repeat the plot above, this time also using `facet_wrap()` to create a separate panel for houses that have air conditioning and houses that do not (`airco`). Include the argument `ncol = 1` in this function to specify that these two panels should be stacked into a single column. Store this figure in an object called `plot3`.  
+- Repeat the plot above, this time also specifying that the plot components should have a simple black and white theme. Store this figure in an object called `plot4`.  
+- Repeat the plot above, also changing the y axis label to "Price" and the x axis label to "Number of Stories". Store this figure in an object called `plot5`.  
+
+*Assignment Code:*  
+```{r}
+# Create plot1
+
+# The ggplot() function initializes a gpplot object
+ggplot()
+
+# Specify the data set
+ggplot(Housing)
+
+# Using `ggplot()`, create a boxplot with `stories` on the x axis and `price` on the y axis. Remember that because `stories` is numeric, you will need to specify that you want it treated as a factor. Store this figure in an object called `plot1`. 
+
+plot1 <- ggplot(Housing) +
+  geom_boxplot(aes(x = as.factor(stories), y = price))
+
+# View plot1
+plot1
+str(plot1)
+
+# Create plot2
+
+#Repeat the plot above, this time also specifying that the `fill` of the boxplots will be based on whether or not the house has a full basement (`fullbase`). Store this figure in an object called `plot2`.  
+
+plot2 <- ggplot(Housing) +
+  geom_boxplot(aes(x = as.factor(stories), y = price, col = fullbase), fill = "green")
+
+# View plot2
+plot2
+ 
+# Create plot3
+
+#- Repeat the plot above, this time also using `facet_wrap()` to create a separate panel for houses that have air conditioning and houses that do not (`airco`). Include the argument `ncol = 1` in this function to specify that these two panels should be stacked into a single column. Store this figure in an object called `plot3`. 
+
+plot3 <- plot2 +
+  facet_wrap(~airco, ncol = 1)
+
+
+# View plot3
+
+plot3
+
+
+# Create plot4
+
+#Repeat the plot above, this time also specifying that the plot components should have a simple black and white theme. Store this figure in an object called `plot4`.
+
+plot4 <- plot3 + 
+  theme_bw()
+
+
+# View plot4
+
+plot4
+
+
+# Create plot5
+#Repeat the plot above, also changing the y axis label to "Price" and the x axis label to "Number of Stories". Store this figure in an object called `plot5`. 
+
+
+plot5 <- plot4 +
+  xlab("Number of Stories") +
+  ylab("Price")
+
+
+# View plot5
+
+plot5
+
+```
+
+*Feedback:*  
+You can see that there is a general trend that the price of houses increases with the number of stories and the presence of air conditioning. Having a full basement also appears to generally increase the price in houses with fewer stories.  
+
+**Question 5: Data Wrangling with `dplyr`**  
+
+*Context:*  
+Like `{ggplot2}`, `{dplyr}` is part of the `tidyverse` set of packages, which emphasize code tidyness, readability and flexibility. Using pipes (`%>%`) is a valuable method for creating reproducible workflows. Here, you'll practice using pipes and basic `{dplyr}` functions to create subsets and tables from the `Housing` data.
+
+*Instructions:*  
+- Using `select()`, create a subset called `subset1` that contains only the columns `price`, `recroom` and `airco`. You can choose whether or not to use a pipe here.    
+- Using `filter()`, create a subset called `subset2` that contains only the `Housing` records where the house has more than 4 bedrooms. You can choose whether or not to use a pipe here.  
+- Using `select()` and `filter()`, create a subset called `subset3` that contains only the houses with a driveway and only the columns `driveway`, `stories`, and `price`.  You will need to use a pipe here.  
+- Using `group_by()` and `summarise()`, create a table called `table1` that contains the average `lotsize` of houses based on whether or not they have a `recroom` in a column called `mean_lotsize`.  You will need to use a pipe here.  
+- Using `group_by()` and `summarise()`, create a table called `table2` that contains the maximum and minimum `price` of houses by the number of stories in columns called `max_price` and `min_price`.  You will need to use a pipe here.
+
+*Assignment Code:*  
+```{r}
+# Create subset1
+-#Using `select()`, create a subset called `subset1` that contains only the columns `price`, `recroom` and `airco`. You can choose whether or not to use a pipe here. 
+
+subset1 <- select(Housing, price, recroom, airco)
+subset1
+
+# Create subset2
+#Using `filter()`, create a subset called `subset2` that contains only the `Housing` records where the house has more than 4 bedrooms. You can choose whether or not to use a pipe here.
+
+subset2 <- filter(Housing, bedrooms > 4)
+head(Housing)
+subset2
+
+# Create subset3
+#Using `select()` and `filter()`, create a subset called `subset3` that contains only the houses with a driveway and only the columns `driveway`,
+
+subset3 <- filter(Housing, driveway)
+Housing %>%
+  select(driveway)
+
+subset3
+
+# Create table1
+
+#Using `group_by()` and `summarise()`, create a table called `table1` that contains the average `lotsize` of houses based on whether or not they have a `recroom` in a column called `mean_lotsize`.  You will need to use a pipe here. 
+
+table1 <- Housing %>%
+  group_by(recroom) %>%
+  summarise(mean_lotsize = mean(lotsize))
+
+table1
+
+
+# Create table2
+
+#Using `group_by()` and `summarise()`, create a table called `table2` that contains the maximum and minimum `price` of houses by the number of stories in columns called `max_price` and `min_price`.  You will need to use a pipe here.
+
+  table2 <- Housing %>%
+  group_by(stories) %>%
+  summarise(minimum_price = min(price),
+            maximum_pop = max(price))
+
+table2
+
+```
+
+*Feedback:*  
+Using `{dplyr}` allows you to manipulate and explore data in a readable, reproducible way.  
+
+**Question 6: Increasing the Complexity**  
+
+*Context:*  
+You will often be interested in answering more complex questions about the data set and will need to use both `{dplyr}` and `{ggplot2}` to produce complex tables and figures. Here, you are interested in visualizing how the average `price` per square foot of the lot (`lotsize`) relates to the number of stories, and presence of a full basement and air conditioning in houses that are selling for more than $50,000.
+
+*Instructions:*  
+- Create a table using `{dplyr}` that contains the average price (`mean_price`), average lot size (`mean_lotsize`) and average price per square foot (`mean_price_per_ft`; this will be equal to `mean_price / mean_lotsize`) of houses costing more than $50,000, grouped by the number of stories (`stories`), presence of a full absement (`fullbase`), and presence of air conditioning (`airco`). Store this table in an object called `table3`.  
+- Using `table3`, create a `ggplot()` with the following characteristics and store it in an object called `plot6`.  
+- **Includes both points and lines, with `stories` on the x axis and `mean_price_per_ft` on the y axis.**  
+- **Point and line color based on `fullbase`.**  
+- **Facetted by `airco`, with panels stacked into one column.**  
+- **Black and white theme.**  
+- **"Number of Stories" as the x axis label, and "Average Price per Square Foot" as the y axis label.**  
+
+*Assignment Code:*  
+```{r}
+# Create table3
+# Create a table using `{dplyr}` that contains the average price (`mean_price`), average lot size (`mean_lotsize`) and average price per square foot (`mean_price_per_ft`; this will be equal to `mean_price / mean_lotsize`) of houses costing more than $50,000, grouped by the number of stories (`stories`), presence of a full absement (`fullbase`), and presence of air conditioning (`airco`). Store this table in an object called `table3`. 
+
+table3 <- Housing %>%
+  filter(price > 50000) %>%
+  group_by(stories, fullbase = "Yes", airco = "Yes") %>%
+  summarise(mean_price = mean(price),
+            mean_lotsize = mean(lotsize),
+            mean_price_per_ft = mean_price/mean_lotsize)
+table3
+
+# Create plot6
+
+#Using `table3`, create a `ggplot()` with the following characteristics and store it in an object called `plot6`.  
+#**Includes both points and lines, with `stories` on the x axis and `mean_price_per_ft` on the y axis.**  
+#**Point and line color based on `fullbase`.**  
+#**Facetted by `airco`, with panels stacked into one column.**  
+#**Black and white theme.**  
+#**"Number of Stories" as the x axis label, and "Average Price per Square Foot" as the y axis label.** 
+
+ggplot()
+plot6 <- ggplot(table3) +
+  geom_point(aes(x = stories, y = mean_price_per_ft, col = fullbase))+
+  geom_line(aes(x = stories, y = mean_price_per_ft)) +
+  facet_wrap(~airco, ncol = 1) +
+  theme_bw() + ylab("Avg Price per Square Foot") +
+  xlab("Number of Stories")
+
+
+# View plot6
+
+
+plot6
